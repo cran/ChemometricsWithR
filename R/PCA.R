@@ -221,7 +221,7 @@ loadingplot.PCA <- function(object, pc = c(1,2),
          origin[nonzeros],
          pcloadings[nonzeros, pc[1]],
          pcloadings[nonzeros, pc[2]],
-         ang = 15, len=.15,
+         angle = 15, length = .15,
          col = col[nonzeros], ...)
 
   if (add) { 
