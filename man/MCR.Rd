@@ -60,6 +60,10 @@ methods to provide initial guesses.
   versa. 
 }
 \author{Ron Wehrens}
+\references{
+  R. Wehrens. "Chemometrics with R - Multivariate Data Analysis in the
+  Natural Sciences and Life Sciences". Springer, Heidelberg, 2011.
+}
 \examples{
 data(bdata)
 D1.efa <- efa(bdata$d1, 3)
@@ -70,8 +74,10 @@ matplot(D1.efa$pure.comp, type = "l")
 D1.opa <- opa(bdata$d1, 3)
 matplot(D1.opa$pure.comp, type = "l")
 
-D1.mcr.efa <- mcr(bdata$d1, D1.efa$pure.comp, what = "col")
-matplot(D1.mcr.efa$C, type = "l", main = "Concentration profiles")
-matplot(t(D1.mcr.efa$S), type = "l", main = "Pure spectra")
+if (require(MASS)) {
+  D1.mcr.efa <- mcr(bdata$d1, D1.efa$pure.comp, what = "col")
+  matplot(D1.mcr.efa$C, type = "l", main = "Concentration profiles")
+  matplot(t(D1.mcr.efa$S), type = "l", main = "Pure spectra")
+  }
 }
 \keyword{manip}

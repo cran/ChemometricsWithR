@@ -63,9 +63,14 @@ project(object, npc = maxpc, newdata, ldngs)
   spanned by the given loadings. If argument \code{ldngs} is given,
   arguments \code{pcamod} and \code{npc} are not needed.
 }
+\author{Ron Wehrens}
+\references{
+  R. Wehrens. "Chemometrics with R - Multivariate Data Analysis in the
+  Natural Sciences and Life Sciences". Springer, Heidelberg, 2011.
+}
 \seealso{\code{\link{plot.PCA}}}
 \examples{
-data(wines, package = "kohonen")
+data(wines, package = "ChemometricsWithRData")
 wines.PC <- PCA(scale(wines))
 }
 \keyword{multivariate}

@@ -54,13 +54,21 @@ SAstep(curr.set, maxvar, fraction = .3, size.dev = 1)
     solutions were accepted and which were rejected}
 }
 \author{Ron Wehrens}
+\references{
+  R. Wehrens. "Chemometrics with R - Multivariate Data Analysis in the
+  Natural Sciences and Life Sciences". Springer, Heidelberg, 2011.
+}
 \seealso{\code{\link{Evaluation}}, \code{\link{GA}}}
 \examples{
+if (require("pls")) {
 data(gasoline, package = "pls")
 ## usually more than 50 iterations are needed
 SAobj <- SAfun(gasoline$NIR, gasoline$octane,
                eval.fun = pls.cvfun, Tinit = 3,
                fraction = .02, niter = 50, ncomp = 2)
 SAobj
+} else {
+  cat("Package pls not available.\nInstall it by typing 'install.packages(\"pls\")'")
+}
 }
 \keyword{optimize }

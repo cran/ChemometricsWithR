@@ -11,6 +11,10 @@ err.rate(x, y)
 \arguments{
   \item{x, y}{True or predicted values, either numbers or factors.}
 }
+\references{
+  R. Wehrens. "Chemometrics with R - Multivariate Data Analysis in the
+  Natural Sciences and Life Sciences". Springer, Heidelberg, 2011.
+}
 \value{
 Function \code{rms} returns the root-mean-square error for real-valued x
 and y vectors. Function \code{err.rate} returns the fraction of

@@ -29,6 +29,10 @@ pls.cvfun(x, response, subset, ...)
   cross-validation.
 }
 \value{One value indicating the quality of the subset}
+\references{
+  R. Wehrens. "Chemometrics with R - Multivariate Data Analysis in the
+  Natural Sciences and Life Sciences". Springer, Heidelberg, 2011.
+}
 \author{Ron Wehrens}
 \seealso{\code{\link{GA}}, \code{\link{SA}}}
 \keyword{optimize}

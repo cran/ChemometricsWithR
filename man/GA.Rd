@@ -71,13 +71,21 @@ GA.XO(subset1, subset2)
     quality value throughout the optimization}
 }
 \author{Ron Wehrens}
+\references{
+  R. Wehrens. "Chemometrics with R - Multivariate Data Analysis in the
+  Natural Sciences and Life Sciences". Springer, Heidelberg, 2011.
+}
 \seealso{\code{\link{Evaluation}}, \code{\link{SA}}}
 \examples{
-data(gasoline, package = "pls")
-## Usually more iterations are needed
-GAobj <- GAfun(gasoline$NIR, gasoline$octane,
-               eval.fun = pls.cvfun, niter = 20,
-               kmin = 3, kmax = 25, ncomp = 2)
-GAobj
+if (require("pls")) {
+  data(gasoline, package = "pls")
+  ## Usually more iterations are needed
+  GAobj <- GAfun(gasoline$NIR, gasoline$octane,
+                 eval.fun = pls.cvfun, niter = 20,
+                 kmin = 3, kmax = 25, ncomp = 2)
+  GAobj
+} else {
+  cat("Package pls not available.\nInstall it by typing 'install.packages(\"pls\")'")
+}
 }
 \keyword{optimize}

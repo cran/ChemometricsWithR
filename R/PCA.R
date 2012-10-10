@@ -29,28 +29,6 @@ PCA <- function(X, warn = TRUE)
   object
 }
 
-scores.PCA <- function(object, npc = maxpc, ...)
-{
-  maxpc <- max(ncol(object$loadings), ncol(object$scores))
-  if (npc > maxpc) {
-    warning(paste("Maximal number of PCs:", maxpc))
-    npc <- maxpc
-  }
-  
-  object$scores[, 1:npc, drop = FALSE]
-}
-
-loadings.PCA <- function(object, npc = maxpc, ...)
-{
-  maxpc <- max(ncol(object$loadings), ncol(object$scores))
-  if (npc > maxpc) {
-    warning(paste("Maximal number of PCs:", maxpc))
-    npc <- maxpc
-  }
-  
-  object$loadings[, 1:npc, drop = FALSE]
-}
-
 variances <- function(object, npc = maxpc)
 {
   maxpc <- max(ncol(object$loadings), ncol(object$scores))
@@ -99,10 +77,20 @@ project <- function(object, npc = maxpc, newdata, ldngs)
   newdata %*% ldngs[, 1:npc]
 }
 
-## two more generic functions...
+## generic functions... 
 scoreplot <- function(object, ...) UseMethod("scoreplot")
-
 loadingplot <- function(object, ...) UseMethod("loadingplot")
+
+scores.PCA <- function(object, npc = maxpc, ...)
+{
+  maxpc <- max(ncol(object$loadings), ncol(object$scores))
+  if (npc > maxpc) {
+    warning(paste("Maximal number of PCs:", maxpc))
+    npc <- maxpc
+  }
+  
+  object$scores[, 1:npc, drop = FALSE]
+}
 
 scoreplot.PCA <- function(object, pc = c(1,2),
                           pcscores = scores(object),
@@ -153,8 +141,18 @@ scoreplot.PCA <- function(object, pc = c(1,2),
     points(pcscores[,pc], ...)
   }
 }
-
     
+loadings.PCA <- function(object, npc = maxpc, ...)
+{
+  maxpc <- max(ncol(object$loadings), ncol(object$scores))
+  if (npc > maxpc) {
+    warning(paste("Maximal number of PCs:", maxpc))
+    npc <- maxpc
+  }
+  
+  object$loadings[, 1:npc, drop = FALSE]
+}
+
 loadingplot.PCA <- function(object, pc = c(1,2),
                             pcloadings = loadings(object),
                             scalefactor = 1,

@@ -56,14 +56,17 @@ screeplot(object, type = c("scree", "percentage"), npc, \dots)
   \item{\dots}{Graphical arguments passed on to lower-level plotting
   functions.}
 }
-
 \details{Score plots and loading plots show the amount of explained
   variance at the axis labels only when PCA
   has been performed at mean-centered data.}
-
+\author{Ron Wehrens}
+\references{
+  R. Wehrens. "Chemometrics with R - Multivariate Data Analysis in the
+  Natural Sciences and Life Sciences". Springer, Heidelberg, 2011.
+}
 \seealso{\code{\link{PCA}}}
 \examples{
-data(wines, package = "kohonen")
+data(wines, package = "ChemometricsWithRData")
 wines.PC <- PCA(scale(wines))
 scoreplot(wines.PC, col = wine.classes, pch = wine.classes)
 loadingplot(wines.PC, show.names = TRUE)

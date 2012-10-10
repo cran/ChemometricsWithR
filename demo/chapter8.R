@@ -1,4 +1,20 @@
-## Demo runs complete - no check yet if numbers are identical to book
+## This chapter uses data and functions from some packages that are
+## not automatically installed when installing
+## ChemometricsWithR. The script checks their presence and in case they
+## are absent does not execute the corresponding code.
+if (!require("e1071")) {
+  e1071.present <- FALSE
+  cat("Package e1071 not available - some code may not run.\nInstall it by typing 'install.packages(\"e1071\")'")
+} else {
+  e1071.present <- TRUE
+}
+if (!require("nnet")) {
+  nnet.present <- FALSE
+  cat("Package nnet not available - some code may not run.\nInstall it by typing 'install.packages(\"nnet\")'")
+} else {
+  nnet.present <- TRUE
+}
+
 data(gasoline, package = "pls")
 X <- gasoline$NIR[, 100*(1:4)]
 Y <- gasoline$octane
@@ -11,10 +27,10 @@ t(solve(crossprod(Xtr), t(Xtr)) %*% Ytr)
 Xtr <- X[odd,]
 Blm <- lm(Ytr ~ Xtr)
 summary(Blm)
- 
+
 Xtr <- cbind(1, gasoline$NIR[odd,])
 try(solve(crossprod(Xtr), t(Xtr)) %*% Ytr)
- 
+
 Blm <- ginv(Xtr) %*% Ytr
 
 ## PCR
@@ -83,7 +99,7 @@ cor(gasoline.pls$loadings[,1:3])
 
 cor(gasoline.pls$scores[,1:3])
 
-plot(gasoline.pls, "loading", comps = 1:3, legendpos = "top",
+plot(gasoline.pls, "loading", comps = 1:3, legendpos = "top", lwd = 1,
      lty = c(1, 2, 4), col = c(1, 2, 4), xlab = "variable nr")
 
 plot(scores(gasoline.pls)[,1], Yscores(gasoline.pls)[,1],
@@ -99,39 +115,45 @@ gasoline.ridge <-
            lambda = seq(0.001, 0.1, by = 0.01))
 select(gasoline.ridge)
 
-## SVMs for regression
-gasoline.svm <- svm(octane ~ ., data = gasoline, 
-                    subset = odd, cross = 10)
+if (e1071.present) {
+  ## SVMs for regression
+  gasoline.svm <- svm(octane ~ ., data = gasoline, 
+                      subset = odd, cross = 10)
+  
+  plot(gasoline$octane[odd], predict(gasoline.svm),
+       main = "Training set", xlab = "Octane number (true)", 
+       ylab = "Octane number (predicted)")
+  abline(0, 1)
+  plot(gasoline$octane[even], 
+       predict(gasoline.svm, new = gasoline[even,]),
+       main = "Test set", xlab = "Octane number (true)", 
+       ylab = "Octane number (predicted)")
+  abline(0, 1)
+  
+  gasoline.svm <- svm(octane ~ ., data = gasoline, 
+                      subset = odd, kernel = "linear")
+  rms(gasoline$octane[even], 
+      predict(gasoline.svm, new = gasoline[even,]))
+}
 
-plot(gasoline$octane[odd], predict(gasoline.svm),
-     main = "Training set", xlab = "Octane number (true)", 
-     ylab = "Octane number (predicted)")
-abline(0, 1)
-plot(gasoline$octane[even], 
-     predict(gasoline.svm, new = gasoline[even,]),
-     main = "Test set", xlab = "Octane number (true)", 
-     ylab = "Octane number (predicted)")
-abline(0, 1)
+if (nnet.present) {
+  ## ANNs for regression
+  X <- scale(gasoline$NIR, scale = FALSE,
+             center = colMeans(gasoline$NIR[odd,]))
+  Xodd.svd <- svd(X[odd,])
+  Xodd.scores <- Xodd.svd$u %*% diag(Xodd.svd$d)
+  Xeven.scores <- X[even,] %*% Xodd.svd$v
+  
+  set.seed(7)
+  gas.nnet <- nnet(Xodd.scores[,1:5],
+                   matrix(gasoline$octane[odd], ncol = 1),
+                   size = 5, linout = TRUE)
+  
+  gas.nnet.pred <- predict(gas.nnet, Xeven.scores)
+  rms(gas.nnet.pred, gasoline$octane[even])
+}
 
-gasoline.svm <- svm(octane ~ ., data = gasoline, 
-                    subset = odd, kernel = "linear")
-rms(gasoline$octane[even], 
-    predict(gasoline.svm, new = gasoline[even,]))
-
-## ANNs for regression
-X <- scale(gasoline$NIR, scale = FALSE,
-           center = colMeans(gasoline$NIR[odd,]))
-Xodd.svd <- svd(X[odd,])
-Xodd.scores <- Xodd.svd$u %*% diag(Xodd.svd$d)
-Xeven.scores <- X[even,] %*% Xodd.svd$v
-
-set.seed(7)
-gas.nnet <- nnet(Xodd.scores[,1:5],
-                 matrix(gasoline$octane[odd], ncol = 1),
-                 size = 5, linout = TRUE)
-
-gas.nnet.pred <- predict(gas.nnet, Xeven.scores)
-rms(gas.nnet.pred, gasoline$octane[even])
+data(wines, package = "ChemometricsWithRData")
 
 ## Classification by regression methods
 wine.indices <- seq(1, 175, by = 25)

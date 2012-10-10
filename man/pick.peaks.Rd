@@ -14,8 +14,12 @@ pick.peaks(x, span)
 \value{A vector containing positions of local maxima in the input data.}
 \author{Ron Wehrens}
 \examples{
+if (require("ptw")) {
 data(lcms, package = "ptw")
 plot(lcms[1,,1], type = "l", xlim = c(1000, 1500))
 abline(v = pick.peaks(lcms[1,,1], 20), col = "blue")
+} else {
+  cat("Package ptw not available.\nInstall it by typing 'install.packages(\"ptw\")'")
+}
 }
 \keyword{manip}

@@ -1,5 +1,39 @@
-## Problem with lars: predict function does not work
-data(wines, package = "kohonen")
+## This chapter uses data and functions from some packages that are
+## not automatically installed when installing
+## ChemometricsWithR. The script checks their presence and in case they
+## are absent does not execute the corresponding code.
+if (!require("boot")) {
+  boot.present <- FALSE
+  cat("Package boot not available - some code may not run.\nInstall it by typing 'install.packages(\"boot\")'")
+} else {
+  boot.present <- TRUE
+}
+if (!require("leaps")) {
+  leaps.present <- FALSE
+  cat("Package leaps not available - some code may not run.\nInstall it by typing 'install.packages(\"leaps\")'")
+} else {
+  leaps.present <- TRUE
+}
+if (!require("subselect")) {
+  subselect.present <- FALSE
+  cat("Package subselect not available - some code may not run.\nInstall it by typing 'install.packages(\"subselect\")'")
+} else {
+  subselect.present <- TRUE
+}
+if (!require("lars")) {
+  lars.present <- FALSE
+  cat("Package lars not available - some code may not run.\nInstall it by typing 'install.packages(\"lars\")'")
+} else {
+  lars.present <- TRUE
+}
+if (!require("elasticnet")) {
+  elasticnet.present <- FALSE
+  cat("Package elasticnet not available - some code may not run.\nInstall it by typing 'install.packages(\"elasticnet\")'")
+} else {
+  elasticnet.present <- TRUE
+}
+
+data(wines, package = "ChemometricsWithRData")
 odd <- seq(1, nrow(wines), 2)
 X <- wines[odd,]                     
 C <- classvec2classmat(vintages[odd])
@@ -7,39 +41,40 @@ wines.lm <- lm(C ~ X)
 wines.lm.summ <- summary(wines.lm)                    
 wines.lm.summ[[3]]
 
-sapply(wines.lm.summ, 
-       function(x) which(x$coefficients[,4] < .1))
+sapply(wines.lm.summ, function(x) which(x$coefficients[,4] < .1))
 
-data(gasoline, package = "pls")
-wavelengths <- seq(900, 1700, by = 2)
-
-set.seed(7)
-gas.pcr.bootCI <-
-  boot(gasoline,
-       function(x, ind) {
-         c(coef(pcr(octane ~ ., data=x, subset = ind, ncomp = 4)))
-       },
-       R = 999)
-gas.BCACI <-
-  sapply(1:ncol(gasoline$NIR),
-         function(i, x) {
-           boot.ci(x, index = i, type = "bca")$bca[,4:5]},
-         gas.pcr.bootCI)
-coefs <- gas.pcr.bootCI$t0
-matplot(wavelengths, t(gas.BCACI), type = "n",
-        xlab = "Wavelength (nm)", ylab = "Regression coefficient",
-        main = "Gasoline data: PCR (4 PCs)")
-abline(h = 0, col = "gray")
-lines(wavelengths, coefs, col = "gray")
-matlines(wavelengths, t(gas.BCACI), col = 2, lty = 1)
-insignif <- apply(gas.BCACI, 2, prod) < 0
-coefs[insignif] <- NA
-lines(wavelengths, coefs, lwd = 2)
-
-odd <- seq(1, nrow(gasoline$NIR), by = 2)
-smallmod <- pcr(octane ~ NIR[,!insignif], data = gasoline,
-                subset = odd, ncomp = 4, validation = "LOO")
-RMSEP(smallmod, intercept = FALSE, estimate = "CV")
+if (boot.present) {
+  data(gasoline, package = "pls")
+  wavelengths <- seq(900, 1700, by = 2)
+  
+  set.seed(7)
+  gas.pcr.bootCI <-
+    boot(gasoline,
+         function(x, ind) {
+           c(coef(pcr(octane ~ ., data=x, subset = ind, ncomp = 4)))
+         },
+         R = 999)
+  gas.BCACI <-
+    sapply(1:ncol(gasoline$NIR),
+           function(i, x) {
+             boot.ci(x, index = i, type = "bca")$bca[,4:5]},
+           gas.pcr.bootCI)
+  coefs <- gas.pcr.bootCI$t0
+  matplot(wavelengths, t(gas.BCACI), type = "n",
+          xlab = "Wavelength (nm)", ylab = "Regression coefficient",
+          main = "Gasoline data: PCR (4 PCs)")
+  abline(h = 0, col = "gray")
+  lines(wavelengths, coefs, col = "gray")
+  matlines(wavelengths, t(gas.BCACI), col = 2, lty = 1)
+  insignif <- apply(gas.BCACI, 2, prod) < 0
+  coefs[insignif] <- NA
+  lines(wavelengths, coefs, lwd = 2)
+  
+  odd <- seq(1, nrow(gasoline$NIR), by = 2)
+  smallmod <- pcr(octane ~ NIR[,!insignif], data = gasoline,
+                  subset = odd, ncomp = 4, validation = "LOO")
+  RMSEP(smallmod, intercept = FALSE, estimate = "CV")
+} 
 
 C <- as.numeric(vintages[vintages != "Barolo"])
 X <- wines[vintages != "Barolo",]
@@ -52,11 +87,13 @@ drop1(wines2.lmfull)
 
 step(wines2.lmfull)
 
-wines2.leaps <- regsubsets(vintages ~ ., data = wines2.df)
-wines2.leaps.sum <- summary(wines2.leaps)
-names(which(wines2.leaps.sum$which[8,]))
+if (leaps.present) {
+  wines2.leaps <- regsubsets(vintages ~ ., data = wines2.df)
+  wines2.leaps.sum <- summary(wines2.leaps)
+  names(which(wines2.leaps.sum$which[8,]))
+}
 
-data(wines, package = "kohonen")
+data(wines, package = "ChemometricsWithRData")
 X <- wines[vintages != "Barolo", ]
 vint <- factor(vintages[vintages != "Barolo"])
 wines.counts <- table(vint)
@@ -93,47 +130,49 @@ Fcal ## error: output missing in book
 which(Fcal > qf(.95, 1, m-p+1))
 
 ## LASSO
-odd <- seq(1, nrow(gasoline$NIR), by = 2)
-even <- seq(2, nrow(gasoline$NIR), by = 2)
-gas.lasso <- lars(gasoline$NIR[odd,], gasoline$octane[odd])
-plot(gas.lasso, xlim = c(0, .2))
-plot(gas.lasso, breaks = FALSE)
-plot(gas.lasso, breaks = FALSE, 
-     xvar = "step", xlim = c(0, 20))
-
-set.seed(7)
-gas.lasso.cv <- cv.lars(gasoline$NIR[odd,], 
-                        gasoline$octane[odd])
-best <- which.min(gas.lasso.cv$cv)
-abline(v = gas.lasso.cv$fraction[best], col = "red")
-
-gas.lasso.pred <- predict(gas.lasso, gasoline$NIR[even,], 
-                          s = best)
-rms(gas.lasso.pred$fit, gasoline$octane[even])
-
-gas.lasso.coefs <- predict(gas.lasso, gasoline$NIR[even,],
-                           s = best, type = "coef")
-gas.lasso.coefs$coefficients[gas.lasso.coefs$coeff != 0]
-
-## elastic nets
-gas.enet <- enet(gasoline$NIR, gasoline$octane, lambda = .5)
-plot(gas.enet, "step")
-gas.enet.cv <- cv.enet(gasoline$NIR, gasoline$octane,
-                       lambda = .5, s=1:50, mode="step")
-
-gas.enet.coef <- predict(gas.enet, gasoline$NIR[even,], s = best,
-                         type = "coef")
-plot(wavelengths, gas.lasso.coefs$coefficients, type = "n",
-     ylab = "Coefficients", xlab = "Wavelength (nm)",
-     ylim = c(-60, 35), axes = FALSE)
-box()
-axis(1)
-segments(wavelengths, gas.enet.coef$coefficients - 40,
-         wavelengths, -40, lwd = 2, col = "red")
-lines(wavelengths, gas.lasso.coefs$coefficients, lwd = 2,
-      type = "h")
-legend("topleft", legend = c("Lasso", "Elastic net"),
-       lty = 1, col = 1:2, bty = "n") 
+if (lars.present & elasticnet.present) {
+  odd <- seq(1, nrow(gasoline$NIR), by = 2)
+  even <- seq(2, nrow(gasoline$NIR), by = 2)
+  gas.lasso <- lars(gasoline$NIR[odd,], gasoline$octane[odd])
+  plot(gas.lasso, xlim = c(0, .2))
+  plot(gas.lasso, breaks = FALSE)
+  plot(gas.lasso, breaks = FALSE, 
+       xvar = "step", xlim = c(0, 20))
+  
+  set.seed(7)
+  gas.lasso.cv <- cv.lars(gasoline$NIR[odd,], 
+                          gasoline$octane[odd])
+  best <- which.min(gas.lasso.cv$cv)
+  abline(v = gas.lasso.cv$fraction[best], col = "red")
+  
+  gas.lasso.pred <- predict(gas.lasso, gasoline$NIR[even,], 
+                            s = best)
+  rms(gas.lasso.pred$fit, gasoline$octane[even])
+  
+  gas.lasso.coefs <- predict(gas.lasso, gasoline$NIR[even,],
+                             s = best, type = "coef")
+  gas.lasso.coefs$coefficients[gas.lasso.coefs$coeff != 0]
+  
+  ## elastic nets
+  gas.enet <- enet(gasoline$NIR, gasoline$octane, lambda = .5)
+  plot(gas.enet, "step")
+  gas.enet.cv <- cv.enet(gasoline$NIR, gasoline$octane,
+                         lambda = .5, s=1:50, mode="step")
+  
+  gas.enet.coef <- predict(gas.enet, gasoline$NIR[even,], s = best,
+                           type = "coef")
+  plot(wavelengths, gas.lasso.coefs$coefficients, type = "n",
+       ylab = "Coefficients", xlab = "Wavelength (nm)",
+       ylim = c(-60, 35), axes = FALSE)
+  box()
+  axis(1)
+  segments(wavelengths, gas.enet.coef$coefficients - 40,
+           wavelengths, -40, lwd = 2, col = "red")
+  lines(wavelengths, gas.lasso.coefs$coefficients, lwd = 2,
+        type = "h")
+  legend("topleft", legend = c("Lasso", "Elastic net"),
+         lty = 1, col = 1:2, bty = "n") 
+}
 
 ## Simulated annealing
 sbst <- SAstep(NULL, 13)
@@ -168,16 +207,18 @@ length(SAobj$best)
 
 sqrt(-SAobj$best.q)
 
-winesHmat <- ldaHmat(X, C)
-wines.anneal <- 
-  anneal(winesHmat$mat, kmin = 3, kmax = 3,
-         H = winesHmat$H, criterion = "ccr12", r = 1)
-wines.anneal$bestsets
-
-wines.anneal$bestvalues
-
-ccr12.coef((nrow(X) - 1) * var(X), winesHmat$H, 
-           r = 1, c(7, 10, 11))
+if (subselect.present) {
+  winesHmat <- ldaHmat(X, C)
+  wines.anneal <- 
+    anneal(winesHmat$mat, kmin = 3, kmax = 3,
+           H = winesHmat$H, criterion = "ccr12", r = 1)
+  wines.anneal$bestsets
+  
+  wines.anneal$bestvalues
+  
+  ccr12.coef((nrow(X) - 1) * var(X), winesHmat$H, 
+             r = 1, c(7, 10, 11))
+}
 
 lda.loofun(X, C, c(2, 7, 10))
 

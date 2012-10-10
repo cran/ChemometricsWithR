@@ -1,4 +1,16 @@
-data(wines, package = "kohonen")
+## This chapter uses data and functions from some packages that are
+## not automatically installed when installing
+## ChemometricsWithR. The script checks their presence and in case they
+## are absent does not execute the corresponding code.
+if (!require("fastICA")) {
+  fastICA.present <- FALSE
+  cat("Package fastICA not available - some code may not run.\nInstall it by typing 'install.packages(\"fastICA\")'")
+} else {
+  fastICA.present <- TRUE
+}
+
+
+data(wines, package = "ChemometricsWithRData")
 wines.sc <- scale(wines)
 ## PCA machinery
 wines.svd <- svd(wines.sc)
@@ -96,7 +108,7 @@ plot(rbind(X1.pca$scores, X2.scores),
      xlab = "PC 1", ylab = "PC 2")
 
 data(gasoline, package = "pls")
-#graphics.off()
+  
 nir.prcomp <- prcomp(gasoline$NIR)
 summary(nir.prcomp, digits = 2)
 
@@ -120,9 +132,8 @@ text(nir.loadings[c(154, 370), 3:4], pos = 4,
 text(nir.loadings[398, 3:4, drop = FALSE],
      labels = "1694 nm", pos = 2)
 
-#graphics.off()
 biplot(nir.prcomp)
- 
+
 extremes <- c(15,41,45,57)
 ## Error in the book: one closing bracket too many
 Xextr <- scale(gasoline$NIR, scale = FALSE)[extremes,]
@@ -157,21 +168,23 @@ plot(wines.isoMDS$points, main = "Non-metric MDS",
      col = wine.classes, pch = wine.classes, 
      xlab = "Coord 1", ylab = "Coord 2")
 
-## ICA and Projection Pursuit
-## Components depend on the setting of the random seed
-set.seed(7)
-wines.ica <- fastICA(wines.sc, 3)
-pairs(wines.ica$S, main = "ICA components",
-      col = wine.classes, pch = wine.classes)
-
-## the order of the components is arbitrary! Compared to the book, ICs
-## 1 and 3 are swapped here. Just showing three out of five components
-## can be very dangerous...
-set.seed(13)
-wines.ica5 <- fastICA(wines.sc, 5)
-pairs(wines.ica5$S[,1:3], 
-      main = "ICA components (3 out of 5)",
-      col = wine.classes, pch = wine.classes)
+if (fastICA.present) {
+  ## ICA and Projection Pursuit
+  ## Components depend on the setting of the random seed
+  set.seed(7)
+  wines.ica <- fastICA(wines.sc, 3)
+  pairs(wines.ica$S, main = "ICA components",
+        col = wine.classes, pch = wine.classes)
+  
+  ## the order of the components is arbitrary! Compared to the book, ICs
+  ## 1 and 3 are swapped here. Just showing three out of five components
+  ## can be very dangerous...
+  set.seed(13)
+  wines.ica5 <- fastICA(wines.sc, 5)
+  pairs(wines.ica5$S[,1:3], 
+        main = "ICA components (3 out of 5)",
+        col = wine.classes, pch = wine.classes)
+}
 
 ## Factor analysis
 wines.fa <- factanal(wines.sc, 3, scores = "regression")

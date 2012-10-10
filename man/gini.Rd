@@ -13,6 +13,10 @@ gini(x, class, splitpoint)
   \item{class}{Class labels, length n.}
   \item{splitpoint}{Tentative split point.}
 }
+\references{
+  R. Wehrens. "Chemometrics with R - Multivariate Data Analysis in the
+  Natural Sciences and Life Sciences". Springer, Heidelberg, 2011.
+}
 \value{The Gini impurity index, given a certain split point, a vector of
   possible splits, and a vector of class labels. Lower values indicate
   more pure leaves.}

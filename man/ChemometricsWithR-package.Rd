@@ -14,8 +14,8 @@
 }
 \author{Ron Wehrens <ron.wehrens@iasma.it>}
 \references{
-  Chemometrics with R - Multivariate Data Analysis in the Natural
-  Sciences and Life Sciences. Springer, Heidelberg, 2011.
+  R. Wehrens. "Chemometrics with R - Multivariate Data Analysis in the
+  Natural Sciences and Life Sciences". Springer, Heidelberg, 2011.
 }
 \keyword{ package }
 \seealso{\code{\link[chemometrics:chemometrics-package]{chemometrics}}}

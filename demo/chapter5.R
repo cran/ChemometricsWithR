@@ -1,4 +1,15 @@
-data(wines, package = "kohonen")
+## This chapter uses data and functions from some packages that are
+## not automatically installed when installing
+## ChemometricsWithR. The script checks their presence and in case they
+## are absent does not execute the corresponding code.
+if (!require("kohonen")) {
+  kohonen.present <- FALSE
+  cat("Package kohonen not available - some code may not run.\nInstall it by typing 'install.packages(\"kohonen\")'")
+} else {
+  kohonen.present <- TRUE
+}
+
+data(wines, package = "ChemometricsWithRData")
 wines.sc <- scale(wines)
 
 set.seed(7)
@@ -19,7 +30,7 @@ summary(wines.som)
 
 ## Next lines take too long for a demo
 ##
-## data(Prostate2000Raw, package = "msProstate")
+## data(Prostate2000Raw, package = "ChemometricsWithRData")
 ## X <- t(Prostate2000Raw$intensity)
 ## types <- Prostate2000Raw$type
 ## prostate.som <- som(X, somgrid(7, 5, "hexagonal"))

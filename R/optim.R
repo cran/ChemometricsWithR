@@ -1,5 +1,5 @@
 ## SA functions
-
+require(MASS)
 SAstep <- function(curr.set, maxvar, 
                    fraction = .3, size.dev = 1) 
 {
@@ -106,6 +106,9 @@ GA.init.pop <- function(popsize, nvar, kmin, kmax)
          nvar, kmin, kmax)
 }
 
+## Update July 23: GA.select now also selects variables if none of the
+## population members satisfy the min.qlt criterion. Avoids error
+## message (reported by Jinsong Zhao)
 GA.select <- function(pop, number, qlts, 
                       min.qlt = .4, qlt.exp = 1)
 {
@@ -113,9 +116,10 @@ GA.select <- function(pop, number, qlts,
   qlts <- qlts - min(qlts)
   threshold <- quantile(qlts, min.qlt)
 
-  weights <- rep(0, n)
-  weights[qlts > threshold] <- 
-    qlts[qlts > threshold] ^ qlt.exp
+  weights <- rep(0.00001, n)
+  if(any(OK <- qlts > threshold))
+    weights[qlts > threshold] <- 
+      qlts[qlts > threshold] ^ qlt.exp
 
   sample(n, number, replace = TRUE, prob = weights)
 }
@@ -132,11 +136,14 @@ GA.XO <- function(subset1, subset2)
   sample(unique(c(subset1, subset2)), length.out)
 }
 
+## Update July 23: GA.mut now avoids including more variables than
+## maxvar (reported by Jinsong Zhao)
 GA.mut <- function(subset, maxvar, mut.prob = .01)
 {
   if (runif(1) < mut.prob) { # swap variable in or out
     new <- sample((1:maxvar)[-subset], 1)
-    length.out <- sample(-1:1 + length(subset), 1)
+    length.out <- min(sample(-1:1 + length(subset), 1),
+                      maxvar)# accept at most maxvar variables
 
     sample(c(new, subset), length.out)
   } else {                   # do nothing
