@@ -1,9 +1,8 @@
-30f747966694afe9072727b630726e66 *DESCRIPTION
-bfa85d58358c991d61645a25c4048112 *NAMESPACE
+e176493f4b17f0112381323c4c2be9ac *DESCRIPTION
+dcead572d4c5c714aeadf7b05d325b02 *NAMESPACE
 35a9a9e000b80adda2befc23cb4573e9 *NEWS
 f1f129e5261ede3883503e08e96614b4 *R/MCR.R
 ff2a012d36b7d4c2e7cc2c2a36a9fdac *R/PCA.R
-6cc0a5ca02ea151088c24bbf420ab060 *R/classvec2classmat.R
 e4e30d08edfcc5cd68e3b48076f9a81a *R/miscfunctions.R
 551d4929fbfb3497f11e2daf46b134b3 *R/optim.R
 216cb657705f12475f78ed66463c145a *TODO
@@ -29,7 +28,6 @@ c5891a6ced90c70bda7372c76392d0da *man/MCR.Rd
 bf3a330ed307b3df0525da997fcb70e7 *man/PCA.Rd
 43d2595a3d854af2836e8fa882f692b6 *man/PCA.plot.Rd
 acfcdbfd50ad631b70d6e7b8308fdb92 *man/SA.Rd
-b64acc48f3e275bbb91be8200d92f9d4 *man/classvec2classmat.Rd
 0cbf3a7fa5b26f460c01499fd514906c *man/gini.Rd
 f2c7d219da1225918bda7b27f085a6b8 *man/pick.peaks.Rd
 115efa31ceeb915032747f9f50ccc255 *man/unsigned.range.Rd
